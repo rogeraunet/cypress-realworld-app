@@ -31,6 +31,7 @@ import { DataContext, DataEvents, DataSchema } from "../machines/dataMachine";
 import TransactionNavTabs from "./TransactionNavTabs";
 import RWALogo from "./SvgRwaLogo";
 import RWALogoIcon from "./SvgRwaIconLogo";
+import { useFlag } from "@unleash/proxy-client-react";
 
 const drawerWidth = 240;
 
@@ -103,6 +104,7 @@ const NavBar: React.FC<NavBarProps> = ({ drawerOpen, toggleDrawer, notifications
 
   const allNotifications = notificationsState?.context?.results;
   const xsBreakpoint = useMediaQuery(theme.breakpoints.only("xs"));
+  const notificationsBadgeEnabled = useFlag("newNotificationsBadge");
 
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}>
@@ -148,13 +150,15 @@ const NavBar: React.FC<NavBarProps> = ({ drawerOpen, toggleDrawer, notifications
           to="/notifications"
           data-test="nav-top-notifications-link"
         >
-          <Badge
-            badgeContent={allNotifications ? allNotifications.length : undefined}
-            data-test="nav-top-notifications-count"
-            classes={{ badge: classes.customBadge }}
-          >
-            <NotificationsIcon />
-          </Badge>
+          {notificationsBadgeEnabled && (
+            <Badge
+              badgeContent={allNotifications ? allNotifications.length : undefined}
+              data-test="nav-top-notifications-count"
+              classes={{ badge: classes.customBadge }}
+            >
+              <NotificationsIcon />
+            </Badge>
+          )}
         </IconButton>
       </Toolbar>
       {(match.pathname === "/" || RegExp("/(?:public|contacts|personal)").test(match.pathname)) && (
